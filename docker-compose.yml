@@ -18,6 +18,7 @@ services:
           - "./volumes/odoo/conf:/etc/odoo"
           - "./volumes/odoo/web-data:/var/lib/odoo"
           - "./addons:/mnt/extra-addons"
+          - "./logs:/var/log/odoo"
     db:
         container_name: postgres-container
         environment:
