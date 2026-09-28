@@ -23,6 +23,7 @@ services:
     image: odoo:18.0
     container_name: odoo18
     restart: unless-stopped
+    user: root
     depends_on:
       db:
         condition: service_healthy
@@ -39,6 +40,8 @@ services:
       - ./volumes/odoo/conf:/etc/odoo
       - ./addons:/mnt/extra-addons
       - ./logs:/var/log/odoo
+      - ./docker-entrypoint.sh:/docker-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/docker-entrypoint.sh"]
     command: >
       odoo
       --config=/etc/odoo/odoo.conf
