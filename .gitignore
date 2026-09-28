@@ -1,0 +1,20 @@
+# Données runtime (ne pas versionner)
+volumes/postgres-data/**
+!volumes/postgres-data/.gitkeep
+
+volumes/odoo/web-data/**
+!volumes/odoo/web-data/.gitkeep
+
+logs/**
+!logs/.gitkeep
+
+# Modules custom locaux (optionnel : retire cette ligne si tu veux versionner tes addons)
+# addons/**
+# !addons/.gitkeep
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
