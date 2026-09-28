@@ -80,18 +80,23 @@ docker compose logs -f db
 
 ## Reset complet (données)
 
-Comme une nouvelle installation (efface DB + filestore + logs, garde `odoo.conf` et `addons/`) :
+Comme une nouvelle installation (efface DB + filestore + logs, garde `odoo.conf` et `addons/`).
+Le script **ne relance pas** la stack.
 
 ```bash
-# interactif (demande confirmation)
 python reset_volumes.py
-
-# sans confirmation + redémarrage auto
-python reset_volumes.py -y --up
+# ou sans confirmation :
+python reset_volumes.py -y
 ```
 
 Sous Linux si les dossiers appartiennent à root :
 
 ```bash
-sudo python3 reset_volumes.py -y --up
+sudo python3 reset_volumes.py -y
+```
+
+Puis, quand tu veux :
+
+```bash
+docker compose up -d
 ```

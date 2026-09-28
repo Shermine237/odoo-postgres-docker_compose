@@ -2,7 +2,7 @@
 """Reset Odoo/Postgres volumes to a fresh-install state.
 
 Stops containers, wipes runtime data (DB, filestore, logs),
-keeps odoo.conf and custom addons, then optionally restarts the stack.
+keeps odoo.conf and custom addons. Does not restart the stack.
 """
 
 from __future__ import annotations
@@ -62,18 +62,13 @@ def confirm(force: bool) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Clean Odoo/Postgres volumes (fresh install)."
+        description="Clean Odoo/Postgres volumes (fresh install). Does not restart."
     )
     parser.add_argument(
         "-y",
         "--yes",
         action="store_true",
         help="Skip confirmation prompt",
-    )
-    parser.add_argument(
-        "--up",
-        action="store_true",
-        help="Restart stack with docker compose up -d after cleanup",
     )
     parser.add_argument(
         "--no-down",
@@ -93,7 +88,10 @@ def main() -> int:
             print("ERROR: docker not found in PATH.", file=sys.stderr)
             return 1
         except subprocess.CalledProcessError as exc:
-            print(f"ERROR: docker compose down failed (exit {exc.returncode}).", file=sys.stderr)
+            print(
+                f"ERROR: docker compose down failed (exit {exc.returncode}).",
+                file=sys.stderr,
+            )
             return 1
 
     print("Cleaning volumes...")
@@ -102,7 +100,6 @@ def main() -> int:
         print(f"* {directory.relative_to(ROOT)}")
         total += clear_directory(directory)
 
-    # Ensure .gitkeep exists after wipe
     for directory in WIPE_DIRS:
         keep = directory / ".gitkeep"
         if not keep.exists():
@@ -110,17 +107,7 @@ def main() -> int:
 
     print(f"Done. Removed {total} item(s). Fresh install ready.")
     print("Preserved: volumes/odoo/conf/odoo.conf and addons/")
-
-    if args.up:
-        try:
-            run_compose("up", "-d")
-        except subprocess.CalledProcessError as exc:
-            print(f"ERROR: docker compose up failed (exit {exc.returncode}).", file=sys.stderr)
-            return 1
-        print("Stack started. Open http://localhost:8069")
-    else:
-        print("Start again with: docker compose up -d")
-
+    print("Start when ready with: docker compose up -d")
     return 0
 
 
