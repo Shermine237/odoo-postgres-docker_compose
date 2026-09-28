@@ -9,8 +9,8 @@ logs/**
 !logs/.gitkeep
 
 # Local custom modules (optional: uncomment if you do not want to version addons)
-# addons/**
-# !addons/.gitkeep
+addons/**
+!addons/.gitkeep
 
 # OS / IDE
 .DS_Store
