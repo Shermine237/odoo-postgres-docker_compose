@@ -1,101 +1,110 @@
 # Odoo 18 + PostgreSQL (Docker Compose)
 
-Stack locale prête à l'emploi : Odoo **18.0** + PostgreSQL **16**.
+Ready-to-use local stack: Odoo **18.0** + PostgreSQL **16**.
 
-## Prérequis
+## Requirements
 
-- Docker Desktop (ou Docker Engine + Compose v2)
-- Ports libres : `8069` (Odoo), `5432` (Postgres)
+- Docker Desktop (or Docker Engine + Compose v2)
+- Free ports: `8069` (Odoo), `5432` (Postgres)
 
-## Démarrage
+## Start
 
 ```bash
 docker compose up -d
 ```
 
-Odoo sera disponible sur : [http://localhost:8069](http://localhost:8069)
+Odoo will be available at: [http://localhost:8069](http://localhost:8069)
 
-Au premier lancement :
+On first launch:
 
-1. Crée une base (ex. `odoo18`)
-2. Mot de passe master (défini dans `volumes/odoo/conf/odoo.conf`) : `admin`
-3. Crée l'utilisateur admin Odoo via l'assistant
+1. Create a database (e.g. `odoo18`)
+2. Master password (set in `volumes/odoo/conf/odoo.conf`): `admin`
+3. Create the Odoo admin user via the setup wizard
 
-## Arrêt / redémarrage
+## Stop / restart
 
 ```bash
 docker compose stop
 docker compose start
-docker compose down          # stoppe sans supprimer les volumes bind
-docker compose down -v       # attention : n'efface pas les dossiers ./volumes bind
+docker compose down          # stops containers; bind-mounted folders stay
+docker compose down -v       # note: does not wipe ./volumes bind mounts
 ```
 
-## Structure
+## Layout
 
 ```
 .
 ├── docker-compose.yml
-├── addons/                      # modules custom → /mnt/extra-addons
-├── logs/                        # logs Odoo
+├── docker-entrypoint.sh         # fixes volume permissions, then starts Odoo
+├── reset_volumes.py             # wipe runtime data (fresh install)
+├── addons/                      # custom modules → /mnt/extra-addons
+├── logs/                        # Odoo logs (optional file logging)
 └── volumes/
     ├── odoo/
-    │   ├── conf/odoo.conf       # configuration Odoo
+    │   ├── conf/odoo.conf       # Odoo configuration
     │   └── web-data/            # filestore / sessions
-    └── postgres-data/           # données PostgreSQL
+    └── postgres-data/           # PostgreSQL data
 ```
 
-## Modules custom
+## Custom modules
 
-Place tes modules dans `addons/`, puis :
+Put your modules in `addons/`, then:
 
 ```bash
 docker compose restart odoo
 ```
 
-Dans Odoo : active le mode développeur → Apps → Update Apps List.
+In Odoo: enable developer mode → Apps → Update Apps List.
 
-Le chemin est déjà configuré dans `odoo.conf` :
+Configured in `odoo.conf`:
 
 ```ini
-addons_path = /mnt/extra-addons
+addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
 ```
 
-## Identifiants (dev local)
+## Credentials (local dev)
 
-| Service    | User | Password |
-|------------|------|----------|
-| PostgreSQL | odoo | odoo     |
-| Master Odoo| —    | admin    |
+| Service     | User | Password |
+|-------------|------|----------|
+| PostgreSQL  | odoo | odoo     |
+| Odoo master | —    | admin    |
 
-**Change `admin_passwd` et les mots de passe DB avant tout usage hors local.**
+**Change `admin_passwd` and DB passwords before any non-local use.**
 
 ## Logs
+
+Odoo logs go to stdout by default (visible with Compose):
 
 ```bash
 docker compose logs -f odoo
 docker compose logs -f db
-# ou fichier :
-# logs/odoo-server.log
 ```
 
-## Reset complet (données)
+The message `Can't find .pfb for face 'Courier'` is harmless (PDF font).
 
-Comme une nouvelle installation (efface DB + filestore + logs, garde `odoo.conf` et `addons/`).
-Le script **ne relance pas** la stack.
+When Odoo is ready, you should see a line like `HTTP service (werkzeug) running on ...8069`.
+Then open http://localhost:8069
+
+To log to a file instead, uncomment `logfile` in `odoo.conf`.
+
+## Full data reset
+
+Resets to a fresh install (wipes DB + filestore + logs, keeps `odoo.conf` and `addons/`).
+The script **does not** restart the stack.
 
 ```bash
 python reset_volumes.py
-# ou sans confirmation :
+# or without confirmation:
 python reset_volumes.py -y
 ```
 
-Sous Linux si les dossiers appartiennent à root :
+On Linux, if directories are owned by root:
 
 ```bash
 sudo python3 reset_volumes.py -y
 ```
 
-Puis, quand tu veux :
+Then, when you want to start again:
 
 ```bash
 docker compose up -d

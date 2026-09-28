@@ -1,4 +1,4 @@
-# Données runtime (ne pas versionner)
+# Runtime data (do not commit)
 volumes/postgres-data/**
 !volumes/postgres-data/.gitkeep
 
@@ -8,7 +8,7 @@ volumes/odoo/web-data/**
 logs/**
 !logs/.gitkeep
 
-# Modules custom locaux (optionnel : retire cette ligne si tu veux versionner tes addons)
+# Local custom modules (optional: uncomment if you do not want to version addons)
 # addons/**
 # !addons/.gitkeep
 

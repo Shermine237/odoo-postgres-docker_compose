@@ -27,7 +27,7 @@ KEEP_NAMES = {".gitkeep"}
 
 def run_compose(*args: str) -> None:
     cmd = ["docker", "compose", *args]
-    print(f"→ {' '.join(cmd)}")
+    print(f"-> {' '.join(cmd)}")
     subprocess.run(cmd, cwd=ROOT, check=True)
 
 
