@@ -80,10 +80,18 @@ docker compose logs -f db
 
 ## Reset complet (données)
 
+Comme une nouvelle installation (efface DB + filestore + logs, garde `odoo.conf` et `addons/`) :
+
 ```bash
-docker compose down
-# Windows PowerShell
-Remove-Item -Recurse -Force .\volumes\postgres-data\*, .\volumes\odoo\web-data\*, .\logs\*
-# garder les .gitkeep si besoin
-docker compose up -d
+# interactif (demande confirmation)
+python reset_volumes.py
+
+# sans confirmation + redémarrage auto
+python reset_volumes.py -y --up
+```
+
+Sous Linux si les dossiers appartiennent à root :
+
+```bash
+sudo python3 reset_volumes.py -y --up
 ```
