@@ -1,0 +1,13 @@
+# Force LF for files executed/read inside Linux containers
+*.sh text eol=lf
+*.conf text eol=lf
+docker-entrypoint.sh text eol=lf
+volumes/odoo/conf/odoo.conf text eol=lf
+
+# Keep Python/scripts consistent across OS
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf

@@ -7,6 +7,13 @@ Ready-to-use local stack: Odoo **18.0** + PostgreSQL **16**.
 - Docker Desktop (or Docker Engine + Compose v2)
 - Free ports: `8069` (Odoo), `5432` (Postgres)
 
+Shell scripts and `odoo.conf` must use **LF** line endings (not CRLF). A `.gitattributes` file enforces this; if you still see `$'\r': command not found` on Windows, run:
+
+```bash
+git add --renormalize .
+git checkout -- docker-entrypoint.sh volumes/odoo/conf/odoo.conf
+```
+
 ## Start
 
 ```bash
