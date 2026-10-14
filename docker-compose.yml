@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16
-    container_name: odoo18-db
+    container_name: odoo19-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: postgres
@@ -20,8 +20,8 @@ services:
       start_period: 10s
 
   odoo:
-    image: odoo:18.0
-    container_name: odoo18
+    image: odoo:19.0
+    container_name: odoo19
     restart: unless-stopped
     user: root
     depends_on:

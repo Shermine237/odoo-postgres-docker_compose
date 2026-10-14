@@ -1,6 +1,6 @@
-# Odoo 18 + PostgreSQL (Docker Compose)
+# Odoo 19 + PostgreSQL (Docker Compose)
 
-Ready-to-use local stack: Odoo **18.0** + PostgreSQL **16**.
+Ready-to-use local stack: Odoo **19.0** + PostgreSQL **16**.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ Odoo will be available at: [http://localhost:8069](http://localhost:8069)
 
 On first launch:
 
-1. Create a database (e.g. `odoo18`)
+1. Create a database (e.g. `odoo19`)
 2. Master password (set in `volumes/odoo/conf/odoo.conf`): `admin`
 3. Create the Odoo admin user via the setup wizard
 
