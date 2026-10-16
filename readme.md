@@ -66,6 +66,24 @@ docker compose restart odoo
 
 In Odoo: enable developer mode → Apps → Update Apps List.
 
+Heavy official apps (especially **Accounting**) often time out in the browser on Windows/Docker. Logs then show `Broken pipe` / `connection to client lost`, and:
+
+```text
+Skipping database ... because of modules to install/upgrade/remove
+```
+
+Finish the install from the CLI instead (Odoo must be able to reach Postgres; do not close the terminal):
+
+```bash
+python install_module.py -d master account
+```
+
+If the module is already marked "to install/upgrade":
+
+```bash
+python install_module.py -d master account --upgrade
+```
+
 Configured in `odoo.conf`:
 
 ```ini
