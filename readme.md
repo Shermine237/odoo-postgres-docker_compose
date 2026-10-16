@@ -24,9 +24,12 @@ Odoo will be available at: [http://localhost:8069](http://localhost:8069)
 
 On first launch:
 
-1. Create a database (e.g. `odoo19`)
+1. Create a database (e.g. `odoo19` — **do not** name it `master`)
 2. Master password (set in `volumes/odoo/conf/odoo.conf`): `admin`
-3. Create the Odoo admin user via the setup wizard
+3. Wait until logs show `Modules loaded` (can take several minutes on Windows)
+4. Create the Odoo admin user via the setup wizard
+
+If creation was interrupted, drop the incomplete database from `/web/database/manager` and create it again.
 
 ## Stop / restart
 
@@ -88,6 +91,8 @@ docker compose logs -f db
 ```
 
 The message `Can't find .pfb for face 'Courier'` is harmless (PDF font).
+
+`relation "ir_module_module" does not exist` during **Create database** is usually the cron worker polling a DB that is still initializing. Wait for `Loading module base` then `Modules loaded`. Cron is disabled by default (`max_cron_threads = 0`) to avoid that race.
 
 When Odoo is ready, you should see a line like `HTTP service (werkzeug) running on ...8069`.
 Then open http://localhost:8069
