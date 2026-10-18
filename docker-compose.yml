@@ -3,11 +3,22 @@ services:
     image: postgres:16
     container_name: odoo18-db
     restart: unless-stopped
+    shm_size: "1gb"
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: odoo
       POSTGRES_PASSWORD: odoo
       PGDATA: /var/lib/postgresql/data/pgdata
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c work_mem=16MB
+      -c maintenance_work_mem=128MB
+      -c max_connections=200
+      -c tcp_keepalives_idle=60
+      -c tcp_keepalives_interval=10
+      -c tcp_keepalives_count=10
     volumes:
       - ./volumes/postgres-data:/var/lib/postgresql/data
     ports:
@@ -23,6 +34,8 @@ services:
     image: odoo:18.0
     container_name: odoo18
     restart: unless-stopped
+    shm_size: "1gb"
+    stop_grace_period: 2m
     user: root
     depends_on:
       db:

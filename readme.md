@@ -24,9 +24,12 @@ Odoo will be available at: [http://localhost:8069](http://localhost:8069)
 
 On first launch:
 
-1. Create a database (e.g. `odoo18`)
+1. Create a database (e.g. `odoo18` — **do not** name it `master`)
 2. Master password (set in `volumes/odoo/conf/odoo.conf`): `admin`
-3. Create the Odoo admin user via the setup wizard
+3. Wait until logs show `Modules loaded` (can take several minutes on Windows)
+4. Create the Odoo admin user via the setup wizard
+
+If creation was interrupted, drop the incomplete database from `/web/database/manager` and create it again.
 
 ## Stop / restart
 
@@ -44,6 +47,7 @@ docker compose down -v       # note: does not wipe ./volumes bind mounts
 ├── docker-compose.yml
 ├── docker-entrypoint.sh         # fixes volume permissions, then starts Odoo
 ├── reset_volumes.py             # wipe runtime data (fresh install)
+├── install_module.py            # install apps without browser timeout
 ├── addons/                      # custom modules → /mnt/extra-addons
 ├── logs/                        # Odoo logs (optional file logging)
 └── volumes/
@@ -55,13 +59,40 @@ docker compose down -v       # note: does not wipe ./volumes bind mounts
 
 ## Custom modules
 
-Put your modules in `addons/`, then:
+Clone or copy modules into `addons/`. That folder is bind-mounted; the container **must not** `chown` it, otherwise `git pull` inside a module fails with `cannot open '.git/FETCH_HEAD': Permission denied`.
+
+If that already happened, restore host ownership **once**, then recreate Odoo:
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" addons
+docker compose up -d --force-recreate odoo
+```
+
+Then:
 
 ```bash
 docker compose restart odoo
 ```
 
 In Odoo: enable developer mode → Apps → Update Apps List.
+
+Heavy official apps (especially **Accounting**) often time out in the browser on Windows/Docker. Logs then show `Broken pipe` / `connection to client lost`, and:
+
+```text
+Skipping database ... because of modules to install/upgrade/remove
+```
+
+Finish the install from the CLI instead (Odoo must be able to reach Postgres; do not close the terminal):
+
+```bash
+python install_module.py -d odoo18 account
+```
+
+If the module is already marked "to install/upgrade":
+
+```bash
+python install_module.py -d odoo18 account --upgrade
+```
 
 Configured in `odoo.conf`:
 
@@ -88,6 +119,8 @@ docker compose logs -f db
 ```
 
 The message `Can't find .pfb for face 'Courier'` is harmless (PDF font).
+
+`relation "ir_module_module" does not exist` during **Create database** is usually the cron worker polling a DB that is still initializing. Wait for `Loading module base` then `Modules loaded`. Cron is disabled by default (`max_cron_threads = 0`) to avoid that race.
 
 When Odoo is ready, you should see a line like `HTTP service (werkzeug) running on ...8069`.
 Then open http://localhost:8069
