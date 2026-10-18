@@ -58,7 +58,16 @@ docker compose down -v       # note: does not wipe ./volumes bind mounts
 
 ## Custom modules
 
-Put your modules in `addons/`, then:
+Clone or copy modules into `addons/`. That folder is bind-mounted; the container **must not** `chown` it, otherwise `git pull` inside a module fails with `cannot open '.git/FETCH_HEAD': Permission denied`.
+
+If that already happened, restore host ownership **once**, then recreate Odoo:
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" addons
+docker compose up -d --force-recreate odoo
+```
+
+Then:
 
 ```bash
 docker compose restart odoo
